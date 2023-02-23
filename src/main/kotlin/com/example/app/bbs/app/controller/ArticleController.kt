@@ -15,7 +15,6 @@ class ArticleController {
     lateinit var articleRepository: ArticleRepository
 
     @PostMapping("/")
-    @ResponseBody
     fun registerArticle(@ModelAttribute articleRequest: ArticleRequest): String {
         articleRepository.save(
             Article(
@@ -26,8 +25,9 @@ class ArticleController {
                 articleRequest.articleKey
             )
         )
-        return "Saved"
+        return "redirect:/"
     }
+
     @GetMapping("/")
     fun getArticleList(model : Model) : String {
         model.addAttribute("articles", articleRepository.findAll())
