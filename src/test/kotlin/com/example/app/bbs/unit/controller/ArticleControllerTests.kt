@@ -39,4 +39,14 @@ class ArticleControllerTests {
             .andExpect(content().string("Saved"))
     }
 
+    @Test
+    fun getArticleListTest() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/")
+        )
+            .andExpect(status().isOk)
+            .andExpect(model().attributeExists("articles"))
+            .andExpect(view().name("index"))
+    }
+
 }
