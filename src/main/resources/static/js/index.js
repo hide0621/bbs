@@ -21,6 +21,10 @@ function changeArticleSubmit(type) {
             changeArticleForm.action = "/edit/" + articleId
             changeArticleForm.submit()
             break;
+        case "delete":
+            changeArticleForm.action = "/delete/confirm/" + articleId
+            changeArticleForm.submit()
+            break;
         default:
             break;
     }
