@@ -143,6 +143,8 @@ class ArticleControllerTests {
         )
             .andExpect(status().is3xxRedirection)
             .andExpect(view().name("redirect:/"))
+            .andExpect(flash().attributeExists("message"))
+            .andExpect(flash().attribute("message", target.MESSAGE_ARTICLE_DOES_NOT_EXISTS))
     }
 
     @Test
@@ -171,6 +173,8 @@ class ArticleControllerTests {
         )
             .andExpect(status().is3xxRedirection)
             .andExpect(view().name("redirect:/"))
+            .andExpect(flash().attributeExists("message"))
+            .andExpect(flash().attribute("message", target.MESSAGE_ARTICLE_DOES_NOT_EXISTS))
     }
 
     @Test
@@ -189,6 +193,8 @@ class ArticleControllerTests {
         )
             .andExpect(status().is3xxRedirection)
             .andExpect(view().name("redirect:/delete/confirm/${latestArticle.id.toString()}"))
+            .andExpect(flash().attributeExists("message"))
+            .andExpect(flash().attribute("message", target.MESSAGE_ARTICLE_KEY_UNMATCH))
     }
 
     @Test
@@ -207,5 +213,7 @@ class ArticleControllerTests {
         )
             .andExpect(status().is3xxRedirection)
             .andExpect(view().name("redirect:/"))
+            .andExpect(flash().attributeExists("message"))
+            .andExpect(flash().attribute("message", target.MESSAGE_DELETE_NORMAL))
     }
 }
