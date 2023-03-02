@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import java.util.*
 
 @Controller
@@ -15,8 +16,18 @@ class ArticleController {
     @Autowired
     lateinit var articleRepository: ArticleRepository
 
+    val MESSAGE_REGISTER_NORMAL = "正常に投稿できました。"
+
+    val MESSAGE_ARTICLE_DOES_NOT_EXISTS = "対象の記事が見つかりませんでした。"
+
+    val MESSAGE_UPDATE_NORMAL = "正常に更新しました。"
+
+    val MESSAGE_ARTICLE_KEY_UNMATCH = "投稿 KEY が一致しません。"
+
+    val ALERT_CLASS_ERROR = "alert-error"
+
     @PostMapping("/")
-    fun registerArticle(@ModelAttribute articleRequest: ArticleRequest): String {
+    fun registerArticle(@ModelAttribute articleRequest: ArticleRequest, redirectAttributes: RedirectAttributes): String {
         articleRepository.save(
             Article(
                 articleRequest.id,
@@ -26,6 +37,9 @@ class ArticleController {
                 articleRequest.articleKey
             )
         )
+
+        redirectAttributes.addFlashAttribute("message", MESSAGE_REGISTER_NORMAL)
+
         return "redirect:/"
     }
 
@@ -36,25 +50,31 @@ class ArticleController {
     }
 
     @GetMapping("/edit/{id}")
-    fun getArticleEdit(@PathVariable id: Int, model: Model): String {
+    fun getArticleEdit(@PathVariable id: Int, model: Model, redirectAttributes: RedirectAttributes): String {
 
         return if (articleRepository.existsById(id)) {
             model.addAttribute("article", articleRepository.findById(id))
             "edit"
         } else {
+            redirectAttributes.addFlashAttribute("message",MESSAGE_ARTICLE_DOES_NOT_EXISTS)
+            redirectAttributes.addFlashAttribute("alert_class",ALERT_CLASS_ERROR)
             "redirect:/"
         }
     }
 
     @PostMapping("/update")
-    fun updateArticle(articleRequest: ArticleRequest): String {
+    fun updateArticle(articleRequest: ArticleRequest, redirectAttributes: RedirectAttributes): String {
         if (!articleRepository.existsById(articleRequest.id)) {
+            redirectAttributes.addFlashAttribute("message", MESSAGE_ARTICLE_DOES_NOT_EXISTS)
+            redirectAttributes.addFlashAttribute("alert_class", ALERT_CLASS_ERROR)
             return "redirect:/"
         }
 
         val article: Article = articleRepository.findById(articleRequest.id).get()
 
         if (articleRequest.articleKey != article.articleKey) {
+            redirectAttributes.addFlashAttribute("message", MESSAGE_ARTICLE_KEY_UNMATCH)
+            redirectAttributes.addFlashAttribute("alert_class", ALERT_CLASS_ERROR)
             return "redirect:/edit/${articleRequest.id}"
         }
 
@@ -64,6 +84,8 @@ class ArticleController {
         article.updateAt = Date()
 
         articleRepository.save(article)
+
+        redirectAttributes.addFlashAttribute("message", MESSAGE_UPDATE_NORMAL)
 
         return "redirect:/"
 
